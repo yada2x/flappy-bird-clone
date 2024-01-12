@@ -4,7 +4,7 @@ A basic Flappy Bird clone made with Pygame as a fun project.
 
 ## To-Do List
 - Bird
-    - Flying and falling physics
+    - ~~Flying and falling physics~~
     - Cycling bird colours
 - Pipes
     - Random y spawns
@@ -14,7 +14,7 @@ A basic Flappy Bird clone made with Pygame as a fun project.
     - White flash on death
 - Background
     - Base movement
-    - Night + day cycle
+    - ~~Night + day cycle~~
     - City background parallax (?)
 - UI
     - Start screen
