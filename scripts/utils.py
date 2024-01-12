@@ -1,6 +1,6 @@
 import pygame
 
-BASE_IMG_PATH = "flappy-bird-assets/sprites/"
+BASE_IMG_PATH = "data/sprites/"
 
 def load_image(path):
     img = pygame.image.load(BASE_IMG_PATH + path).convert()
