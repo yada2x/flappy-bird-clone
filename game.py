@@ -3,7 +3,7 @@ import sys
 import random
 
 from scripts.utils import load_image, gameover
-from scripts.entities import PhysicsObject, Pipe, Bird
+from scripts.entities import PhysicsObject, Pipe, PipeSpawner, Bird
 
 class Game():
     def __init__(self) -> None:
@@ -17,6 +17,7 @@ class Game():
         self.assets = {
             'day': load_image("background/background-day.png"),
             'night': load_image("background/background-night.png"),
+            'base': load_image("base.png"),
             'pipe': load_image("pipe/pipe-green.png"),
             'bird-down': load_image("bird/yellow/yellowbird-downflap.png"),
             'bird-mid': load_image("bird/yellow/yellowbird-midflap.png"),
@@ -25,22 +26,28 @@ class Game():
 
     def reset(self):
         self.bird = Bird(self, "bird-mid", (70, 200), (34, 24))
-        self.bk = random.choice(("day", "night"))
+        self.bg = random.choice(("day", "night"))
+        self.pipe_spawner = PipeSpawner(self, "pipe", self.screen.get_width() + 104, (52, 320), 3, 100 )
+        self.spawn_time = 0
 
     def run(self):
         self.reset()
+        base_pos = 0
         while True:
             # Update Screen
             self.display.fill((0, 0, 0, 0))
-            self.display.blit(self.assets[self.bk], (0, 0))
+            self.display.blit(self.assets[self.bg], (0, 0))
 
             alive = self.bird.update()
             self.bird.render(self.display)
-            # print(self.bird.pos)
+            self.bird.collisions(self.pipe_spawner.get_rects())
 
-            if not alive and self.bird.pos[1] >= self.display.get_height() + self.bird.size[1]:
-                gameover() # revamp this to enable white flash
-                self.reset()
+            self.spawn_time += 1
+            if self.spawn_time >= 60 and alive:
+                self.pipe_spawner.add_pipe()
+                self.spawn_time = 0
+            self.pipe_spawner.update(self.pipe_spawner.speed)
+            self.pipe_spawner.render(self.display)
 
             # Input Manager
             event: pygame.Event
@@ -55,10 +62,20 @@ class Game():
                     if event.key == pygame.K_r:
                         self.reset()
                     if event.key == pygame.K_SPACE:
-                        self.bird.jump()
-
+                        if alive:
+                            self.bird.jump()
+            
+            self.display.blit(self.assets["base"], (-base_pos, 400)) # So this is rendered over the bird and pipes
+            base_pos = (base_pos + 3) % 48 if alive else 0
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))
             pygame.display.update()
             self.clock.tick(60)
+
+            # End state
+            if not alive:
+                self.pipe_spawner.speed = 0 
+                if self.bird.floored:
+                    gameover()
+                    self.reset()
 
 Game().run()
