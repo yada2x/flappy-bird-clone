@@ -25,6 +25,9 @@ class Pipe(PhysicsObject):
     def rect(self):
         return [pygame.Rect(self.pos[0], self.pos[1] - self.size[1] - self.gap // 2, self.size[0], self.size[1]), pygame.Rect(self.pos[0], self.pos[1] + self.gap // 2, self.size[0], self.size[1])]
 
+    def points_rect(self):
+        return pygame.Rect(self.pos[0] + self.size[0]//2 , self.pos[1] - self.gap // 2, 1, self.gap)
+
     def update(self, speed):
         self.pos[0] -= speed
 
@@ -34,7 +37,7 @@ class Pipe(PhysicsObject):
 
 class PipeSpawner:
     def __init__(self, game, obj_type, spawn_point, size, speed, gap):
-        self.pipes = []
+        self.pipes: list[Pipe] = []
         self.game = game
         self.obj_type = obj_type
         self.spawn_point = spawn_point
@@ -59,6 +62,12 @@ class PipeSpawner:
             top, bot = pipe.rect()
             rects.append(top)
             rects.append(bot)
+        return rects
+
+    def get_point_rects(self):
+        rects = []
+        for pipe in self.pipes:
+            rects.append(pipe.points_rect())
         return rects
 
     def render(self, surf: pygame.Surface):
@@ -96,15 +105,17 @@ class Bird(PhysicsObject):
             self.alive = False
         return self.alive
 
-    def collisions(self, rects: list[pygame.Rect]):
-        if not rects:
-            return
-        
+    def collisions(self, rects: list[pygame.Rect], point_rects: list[pygame.Rect]):
         bird = self.rect()
         for rect in rects:
             if rect.colliderect(bird):
-                self.jump()
                 self.alive = False
+                self.game.sfx['hit'].play()
+
+        for rect in point_rects:
+            if rect.colliderect(bird) and self.alive:
+                return True
+        return False
 
 
     def rect(self):

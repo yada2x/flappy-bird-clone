@@ -10,16 +10,17 @@ A basic Flappy Bird clone made with Pygame as a fun project.
     - ~~Add pipe collisions~~
 - Animation
     - Wing flaps
-    - White flash on death
+    - White flash on death (scrapped)
 - Background
     - ~~Base movement~~
     - ~~Night + day cycle~~
 - UI
-    - Start screen
-    - Game over screen
-    - Incrementing score
+    - Start screen (scrapped)
+    - ~~Game over screen~~
+    - ~~Incrementing score~~
+    - Score UI
 - Sound
-    - Point increase
-    - Flap noise
-    - Death noise (hit.wav + die.wav)
-    - Swoosh (start)
+    - ~~Point increase~~
+    - ~~Flap noise~~
+    - ~~Death noise (hit.wav + die.wav)~~
+    - ~~Swoosh (start)~~
