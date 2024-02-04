@@ -2,7 +2,7 @@ import pygame
 import sys
 import random
 
-from scripts.utils import load_image, load_images
+from scripts.utils import load_image, load_images, Animation
 from scripts.entities import PhysicsObject, Pipe, PipeSpawner, Bird
 
 class Game():
@@ -19,11 +19,11 @@ class Game():
             'night': load_image("background/background-night.png"),
             'base': load_image("base.png"),
             'pipe': load_image("pipe/pipe-green.png"),
-            'bird-down': load_image("bird/yellow/yellowbird-downflap.png"),
-            'bird-mid': load_image("bird/yellow/yellowbird-midflap.png"),
-            'bird-up': load_image("bird/yellow/yellowbird-upflap.png"),
-            'numbers': load_images("nums"),
-            'gameover': load_image("gameover.png")
+            'numbers': load_images("nums", colourkey=False),
+            'gameover': load_image("gameover.png"),
+            'yellow/flapping': Animation(load_images('bird/yellow'), img_dur=5, loop=True),
+            'blue/flapping': Animation(load_images('bird/blue'), img_dur=5, loop=True),
+            'red/flapping': Animation(load_images('bird/red'), img_dur=5, loop=True),
         }
 
         self.sfx = {
@@ -40,11 +40,22 @@ class Game():
         self.sfx['swoosh'].set_volume(0.5)
         self.sfx['wing'].set_volume(0.5)
 
+    def update_score(self):
+        digits = []
+        for d in str(self.score):
+            digits.append(int(d))
+
+        x_pos = self.display.get_width()//2 - len(digits) * 12
+        for digit in digits:
+            self.display.blit(self.assets['numbers'][digit], (x_pos, self.display.get_height()//8))
+            x_pos += self.assets['numbers'][digit].get_width() * 1.1
+
     def reset(self):
         self.sfx['swoosh'].play()
         self.score = 0
         self.touching = False
-        self.bird = Bird(self, "bird-mid", (70, 200), (34, 24))
+        colour = random.choice(('blue', 'yellow', 'red'))
+        self.bird = Bird(self, colour, (70, 200), (34, 24))
         self.bg = random.choice(("day", "night"))
         self.pipe_spawner = PipeSpawner(self, "pipe", self.screen.get_width() + 104, (52, 320), 3, 100 )
         self.spawn_time = 0
@@ -115,7 +126,8 @@ class Game():
                         if alive:
                             self.sfx['wing'].play()
                             self.bird.jump()
-            
+
+            self.update_score()
             self.display.blit(self.assets["base"], (-self.base_pos, 400)) # So this is rendered over the bird and pipes
             self.base_pos = (self.base_pos + 3) % 48 if alive else 0
             self.screen.blit(pygame.transform.scale(self.display, self.screen.get_size()), (0, 0))

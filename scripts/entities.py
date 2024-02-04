@@ -7,12 +7,21 @@ class PhysicsObject:
         self.obj_type = obj_type
         self.pos = list(pos)
         self.size = size
+        
+        self.action = ''
+        self.anim_offset = (0, 0)
+    
+    def set_action(self, action):
+        if action != self.action:
+            self.action = action
+            self.animation = self.game.assets[self.obj_type + "/" + self.action].copy()
 
     def rect(self):
         return pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1]) # x, y, w, h
     
     def render(self, surf: pygame.Surface):
-        surf.blit(self.game.assets[self.obj_type], (self.pos[0], self.pos[1]))
+        surf.blit(self.animation.img(), (self.pos[0] + self.anim_offset[0], self.pos[1] + self.anim_offset[1]))
+        # surf.blit(self.game.assets[self.obj_type], (self.pos[0], self.pos[1]))
 
 class Pipe(PhysicsObject):
     def __init__(self, game, obj_type, pos, size, gap):
@@ -90,7 +99,9 @@ class Bird(PhysicsObject):
         self.bot_bound = -self.size[1] * 1.25
         self.alive = True
         self.floored = False
-    
+
+        self.set_action('flapping')
+
     def update(self):
         if self.pos[1] + self.velocity < self.top_bound and self.pos[1] > self.bot_bound:
             self.pos[1] += self.velocity
@@ -103,6 +114,9 @@ class Bird(PhysicsObject):
                 self.pos[1] = self.top_bound
                 self.floored = True
             self.alive = False
+        
+        self.animation.update()
+
         return self.alive
 
     def collisions(self, rects: list[pygame.Rect], point_rects: list[pygame.Rect]):

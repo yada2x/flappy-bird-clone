@@ -9,7 +9,8 @@ A basic Flappy Bird clone made with Pygame as a fun project.
     - ~~Random y spawns~~
     - ~~Add pipe collisions~~
 - Animation
-    - Wing flaps
+    - ~~Wing flaps~~
+    - ~~Colour cycle~~
     - White flash on death (scrapped)
 - Background
     - ~~Base movement~~
@@ -18,7 +19,7 @@ A basic Flappy Bird clone made with Pygame as a fun project.
     - Start screen (scrapped)
     - ~~Game over screen~~
     - ~~Incrementing score~~
-    - Score UI
+    - ~~Score UI~~
 - Sound
     - ~~Point increase~~
     - ~~Flap noise~~
